@@ -40,18 +40,54 @@
   				});
         }
 			});
+
       $("#results").click(function(el) {
         $target = $(el.originalTarget);
         if ($target.is('a.result')) {
           $("#sandbox").show();
           $($target.attr('href')).css({height : '500px', width : '100%', border : 'solid 3px #CCCCCC'}).toggle();
+          return false;
         }
       });
+
       $("#cross_domain_sandbox").append('<a href="#" class="expand">Expand All</a>');
       $("#cross_domain_sandbox a.expand").click(function(el) {
         $("iframe", "#cross_domain_sandbox").css({height : '500px', width : '100%', border : 'solid 3px #CCCCCC', overflow : 'auto'});
         return false;
       });
+      
+      var styles = '';
+      styles += '<style type="text/css" media="screen">';
+    	styles +=   '#results {';
+    	styles +=     'clear:both;';		
+    	styles +=     'float: left;';
+    	styles +=     'width: 100%;';		
+    	styles +=   '}';
+    	styles +=   '#cross_domain_sandbox {';
+    	styles +=     'float: left;';
+    	styles +=     'clear: both;';		
+    	styles +=     'width: 100%;';		
+    	styles +=   '}';
+    	styles +=   'iframe {';
+    	styles +=     'height: 5px;';
+    	styles +=     'overflow: hidden;';
+    	styles +=     'border: none;';
+    	styles +=     'width: 600px;';	
+    	styles +=   '}';
+    	styles +=   '.pass a, .fail a {';
+    	styles +=     'width: 50px;';	
+    	styles +=     'height: 50px;';		
+    	styles +=     'margin: 5px;';
+    	styles +=     'float: left;';		
+    	styles +=   '}';
+    	styles +=   '.pass a {';
+    	styles +=     'background-color: #C6E746;';
+    	styles +=     'color: #C6E746;';
+    	styles +=   '}';
+    	styles +=   '.fail a {';
+    	styles +=   '}';
+    	styles += '</style>';
+		$('body').append(styles);
 		});
 	};
 
@@ -69,7 +105,7 @@
 				}
 				url += window.location.hostname;
 				url += test_file.filepath;
-				li_list += '<li><a href="' + url + '">' + test_file.title + '</a></li>'
+				li_list += '<li><a href="' + url + '">' + test_file.title + '</a></li>';
 			});
 			$container.append(li_list);
 		});
