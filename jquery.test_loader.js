@@ -1,3 +1,6 @@
+//  * Copyright (c) 2009 Lee Jones
+//  * Licensed under the MIT Lisense
+
 (function($){
 	$.fn.test_loader = function() {
 		return this.each(function() {
