@@ -9,15 +9,36 @@
 				$link = $(link);
 				var url = $link.attr('href');
 				var title = $link.text();
-				$('body').append('<iframe src="' + url + '" id="iframe' + index + '" style="display:none"></iframe>');
-				$("iframe#iframe"+index).load(function() {
-					if ($(this).contents().find('#qunit-banner').hasClass('qunit-pass')) {
-						$results.append('pass ');
-					}
-					else {					
-						$results.append('fail ');
-					}
-				});
+        var current_date = new Date();
+        var current_time = current_date.getTime();        
+        var iframe_source = url + '?time=' + current_time + '#qunit-banner';
+        if ($.is_cross_domain(url)) {
+  				if (!$('#cross_domain_sandbox').length) {
+  				  $('body').append('<div id="cross_domain_sandbox"></div>');
+  				};
+  				
+  				$('#cross_domain_sandbox').append('<div class="boxed-test"><iframe src="' + iframe_source + '" id="iframe' + index + '"></iframe></div>');
+        }
+        else {
+  				if (!$('#sandbox').length) {
+  				  $('body').append('<div id="sandbox"></div>');
+  				};
+  				
+				  $('#sandbox').append('<iframe src="' + iframe_source + '" id="iframe' + index + '"></iframe>');
+
+
+          $("iframe#iframe"+index).load(function() {
+          // TODO poll the iframe to determine when the test is done
+            setTimeout(function() {
+    					if ($("iframe#iframe"+index).contents().find("#qunit-banner").hasClass("qunit-pass")) {
+    						$results.append('<div class="pass">pass</div>');
+    					}
+    					else {					
+    						$results.append('<div class="fail">fail</div>');
+    					}
+            }, 200);
+  				});
+        }
 			});
 		});
 	};

@@ -1,4 +1,44 @@
 $(document).ready(function() {
+  $.setup_links = function(options) {
+    var settings = {};
+    var defaults = {
+      element_id : 'tests',
+      links : [
+        { href : 'http://' + window.location.hostname + '/tests/mock_tests/pass.html', title : 'Foo' },
+  			{ href : 'http://' + window.location.hostname + '/tests/mock_tests/pass.html', title : 'Bar' }, 
+  			{ href : 'http://' + window.location.hostname + '/tests/mock_tests/fail.html', title : 'Baz' }	
+      ]
+    };
+    $.extend(settings, defaults, options);
+
+    var link_list = '';
+    
+    $.each(settings.links, function(index, element){
+      link_list += '<li><a href="' + element.href +'">' + element.title + '</a></li>';
+    });
+
+		var links =		'<div id="'+ settings.element_id + '" style="display:none">';
+				links +=		'<ul id="testing_urls">';
+				links +=      link_list;
+				links +=		'</ul>';
+				links +=	'</div>';
+		$('body').append(links);  
+		
+		return $('#' + settings.element_id);
+  };
+  
+  $.teardown_links = function(options) {
+    var settings = {};
+    var defaults = { element_id : 'tests' };
+    $.extend(settings, defaults, options);
+    $('#' + settings.element_id).remove();
+  };
+  
+  $.teardown = function() {
+    $("#sandbox, #results, #cross_domain_sandbox").remove();
+    $.teardown_links();
+  };
+
 	test("Basic jQuery plugin functionality", function() {
 		ok(
 			$('#test_results').test_loader(),
@@ -25,16 +65,7 @@ $(document).ready(function() {
 
 	asyncTest("Should create iframes for each link with href as src attribute", function() {
 
-			var links =		'<div id="tests" style="display:none">';
-					links +=		'<ul id="testing_urls">';
-					links +=			'<li><a href="http://' + window.location.hostname + '/tests/mock_tests/pass.html">Foo</a></li>';
-					links +=			'<li><a href="http://' + window.location.hostname + '/tests/mock_tests/pass.html">Bar</a></li>';
-					links	+=			'<li><a href="http://' + window.location.hostname + '/tests/mock_tests/fail.html">Baz</a></li>';
-					links +=		'</ul>';
-					links +=	'</div>';
-			$('body').append(links);
-
-			$('#testing_urls').test_loader();
+		$.setup_links().test_loader();
 			
 		setTimeout(function() {
 			var expected = [
@@ -42,12 +73,15 @@ $(document).ready(function() {
 				'http://' + window.location.hostname + '/tests/mock_tests/pass.html',
 				'http://' + window.location.hostname + '/tests/mock_tests/fail.html'
 			];
-			var result = $('iframe').map(function() {return $(this).attr('src');}).get();
-			same(
-				result,
-				expected,
-				"Should create iframes with source same as links"
-			);
+			
+			$.each(expected, function(index, iframe) {
+        var src = $('#iframe' + index).attr('src');
+        var url_matcher = new RegExp('^' + expected[index]);
+        ok(
+          url_matcher.test(expected[index]),
+          "Should create iframe with source url that starts with " + expected[index]
+        );
+			});
 			
 			var expected = ['pass', 'pass', 'fail'];
 			var result = $('iframe').map(function() {
@@ -63,19 +97,37 @@ $(document).ready(function() {
 			);
 			
 			var result = $("#results").text();
-			expected = "pass pass fail ";
+			expected = "passpassfail";
 			equal(
 				result,
 				expected,
 				"Should display results"
 			);
 
-
 			start();
-
-			$('iframe, #tests').remove();
-
+		  $.teardown();
 		}, 500);
-
+	});
+	
+	asyncTest("Should load cross domain requests in visible iFrame", function() {
+	  var options = {
+	    links : [
+  	    { href : 'http://subdomain1.' + window.location.pathname, title : 'subdomain1' },
+  	    { href : 'http://subdomain2.' + window.location.pathname, title : 'subdomain2' }
+	    ]
+	  };
+	  $.setup_links(options).test_loader();
+	  
+	  setTimeout(function(){
+  	  $.each(options.links, function(index, element) {
+  	    ok(
+  	      $('#iframe' + index).is(':visible'),
+  	      "Cross domain tests should be visible"
+  	    );
+  	  });
+  	  start();  
+  	  $.teardown();
+	  }, 500);
+	  
 	});
 });
