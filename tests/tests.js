@@ -28,9 +28,9 @@ $(document).ready(function() {
 
 				var links =		'<div id="tests" style="display:none">';
 						links +=		'<ul id="testing_urls">';
-						links +=			'<li><a href="http://' + window.location.hostname + '/tests/foo.js">Foo</a></li>';
-						links +=			'<li><a href="http://' + window.location.hostname + '/tests/bar.js">Bar</a></li>';
-						links	+=			'<li><a href="http://' + window.location.hostname + '/tests/baz.js">Baz</a></li>';
+						links +=			'<li><a href="http://' + window.location.hostname + '/tests/mock_tests/pass.html">Foo</a></li>';
+						links +=			'<li><a href="http://' + window.location.hostname + '/tests/mock_tests/pass.html">Bar</a></li>';
+						links	+=			'<li><a href="http://' + window.location.hostname + '/tests/mock_tests/fail.html">Baz</a></li>';
 						links +=		'</ul>';
 						links +=	'</div>';
 				$('body').append(links);
@@ -39,15 +39,28 @@ $(document).ready(function() {
 				
 			setTimeout(function() {
 				var expected = [
-					'http://' + window.location.hostname + '/tests/foo.js',
-					'http://' + window.location.hostname + '/tests/bar.js',
-					'http://' + window.location.hostname + '/tests/baz.js'
+					'http://' + window.location.hostname + '/tests/mock_tests/pass.html',
+					'http://' + window.location.hostname + '/tests/mock_tests/pass.html',
+					'http://' + window.location.hostname + '/tests/mock_tests/fail.html'
 				];
 				var result = $('iframe').map(function() {return $(this).attr('src');}).get();
 				same(
 					result,
 					expected,
 					"Should create iframes with source same as links"
+				);
+				
+				var expected = ['pass', 'pass', 'fail'];
+				var result = $('iframe').map(function() {
+					if ($(this).contents().find('#qunit-banner').hasClass('qunit-pass')) {
+						return 'pass';
+					}
+					return 'fail';
+				}).get();
+				same(
+					result,
+					expected,
+					"Should be able to pull back pass/fail data"
 				);
 				start();
 
