@@ -24,22 +24,34 @@
   				  $('body').append('<div id="sandbox"></div>');
   				};
   				
-				  $('#sandbox').append('<iframe src="' + iframe_source + '" id="iframe' + index + '"></iframe>');
+				  $('#sandbox').hide().append('<iframe src="' + iframe_source + '" id="iframe' + index + '"></iframe>');
 
-
-          $("iframe#iframe"+index).load(function() {
-          // TODO poll the iframe to determine when the test is done
+          $("iframe#iframe"+index).hide().load(function() {
+            var iframe_id = "iframe" + index;
+            // TODO poll the iframe to determine when the test is done
             setTimeout(function() {
-    					if ($("iframe#iframe"+index).contents().find("#qunit-banner").hasClass("qunit-pass")) {
-    						$results.append('<div class="pass">pass</div>');
+    					if ($('#' + iframe_id).contents().find("#qunit-banner").hasClass("qunit-pass")) {
+    						$results.append('<div class="pass"><a href="#' + iframe_id + '" class="result">pass</a></div>');
     					}
     					else {					
-    						$results.append('<div class="fail">fail</div>');
+    						$results.append('<div class="fail"><a href="#' + iframe_id + '" class="result">fail</a></div>');
     					}
             }, 200);
   				});
         }
 			});
+      $("#results").click(function(el) {
+        $target = $(el.originalTarget);
+        if ($target.is('a.result')) {
+          $("#sandbox").show();
+          $($target.attr('href')).css({height : '500px', width : '100%', border : 'solid 3px #CCCCCC'}).toggle();
+        }
+      });
+      $("#cross_domain_sandbox").append('<a href="#" class="expand">Expand All</a>');
+      $("#cross_domain_sandbox a.expand").click(function(el) {
+        $("iframe", "#cross_domain_sandbox").css({height : '500px', width : '100%', border : 'solid 3px #CCCCCC', overflow : 'auto'});
+        return false;
+      });
 		});
 	};
 	
