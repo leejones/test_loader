@@ -54,6 +54,26 @@
       });
 		});
 	};
+
+	$.fn.build_test_list = function(options) {
+		return this.each(function() {
+			var $container = $(this);
+			var settings = {};
+			var defaults = {};
+			$.extend(settings, defaults, options);
+			var li_list = '';
+			$.each(settings.test_files, function(index, test_file) {
+				url = (window.location.protocol || 'http:') + '//';
+				if (test_file.subdomain != '') {
+					url += test_file.subdomain + '.';
+				}
+				url += window.location.hostname;
+				url += test_file.filepath;
+				li_list += '<li><a href="' + url + '">' + test_file.title + '</a></li>'
+			});
+			$container.append(li_list);
+		});
+	};
 	
 	$.is_cross_domain = function(url) {
 		var domain = window.location.hostname;
