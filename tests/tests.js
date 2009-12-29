@@ -47,6 +47,11 @@ $(document).ready(function() {
 	});
 	
 	test("Determine if URL is on same domain", function() {
+    ok(
+      !($.is_cross_domain('/local/file/path.html')),
+      "Should varify as same domain"
+    );
+
 		ok(
 			$.is_cross_domain('http://google.com/test.js'),
 			"Should verify as cross domain"

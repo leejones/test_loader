@@ -118,7 +118,11 @@
 		var domain = window.location.hostname;
 		var url_domain;
 		var domain_tester = /(?:https?:\/\/)(.*\..*?)(?:\/)/;
-		if (domain_tester.test(url)) {
+    var root_path = /^\//;
+    if (root_path.test(url)) {
+      url_domain = domain;
+    }
+		else if (domain_tester.test(url)) {
 			url_domain = url.match(domain_tester)[1];
 		}
 		return (url_domain == domain)? false : true;
