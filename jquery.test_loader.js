@@ -88,6 +88,8 @@
     	styles +=     'color: #C6E746;';
     	styles +=   '}';
     	styles +=   '.fail a {';
+    	styles +=     'background-color: #EE5757;';
+    	styles +=     'color: #EE5757;';
     	styles +=   '}';
     	styles += '</style>';
 		$('body').append(styles);
