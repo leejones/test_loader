@@ -31,15 +31,26 @@
 
           $("iframe#iframe"+index).hide().load(function() {
             var iframe_id = "iframe" + index;
-            // TODO poll the iframe to determine when the test is done
-            setTimeout(function() {
-    					if ($('#' + iframe_id).contents().find("#qunit-banner").hasClass("qunit-pass")) {
-    						$results.append('<div class="pass"><a href="#' + iframe_id + '" class="result">pass</a></div>');
-    					}
-    					else {					
-    						$results.append('<div class="fail"><a href="#' + iframe_id + '" class="result">fail</a></div>');
-    					}
-            }, 200);
+						var max_polls = 100;
+						var polls = 0;
+						
+						function poll_for_result(selector) {
+							return $(selector).contents().find("#qunit-testresult").length;
+						}
+						
+						var poller = setInterval(function() {
+							polls++;
+							if (poll_for_result('#' + iframe_id) || polls >= max_polls) {
+								clearInterval(poller);
+	    					if ($('#' + iframe_id).contents().find("#qunit-banner").hasClass("qunit-pass")) {
+	    						$results.append('<div class="pass"><a href="#' + iframe_id + '" class="result">pass</a></div>');
+	    					}
+	    					else {					
+	    						$results.append('<div class="fail"><a href="#' + iframe_id + '" class="result">fail</a></div>');
+	    					}
+							}
+						}, 250);
+
   				});
         }
 			});

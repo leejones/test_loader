@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+  "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <script type="text/javascript" charset="utf-8" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function(){
+          setTimeout(function() {
+            var content = '<h2 id="qunit-banner" class="qunit-fail">Fail</h2>' +
+                '<p id="qunit-testresult" class="result">' +
+                  'Tests completed in 2199 milliseconds.<br/>' +
+                  '<span class="passed">0</span> tests of <span class="total">1</span> passed, <span class="failed">1</span> failed.' +
+                '</p>';
+            $("body").html(content);
+          }, 500);
+        });
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

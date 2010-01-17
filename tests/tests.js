@@ -1,4 +1,5 @@
 $(document).ready(function() {
+
   $.setup_links = function(options) {
     var settings = {};
     var defaults = {
@@ -111,28 +112,60 @@ $(document).ready(function() {
 
 			start();
 		  $.teardown();
-		}, 500);
+		}, 2000);
 	});
 	
 	asyncTest("Should load cross domain requests in visible iFrame", function() {
 	  var options = {
 	    links : [
-  	    { href : 'http://subdomain1.' + window.location.pathname, title : 'subdomain1' },
-  	    { href : 'http://subdomain2.' + window.location.pathname, title : 'subdomain2' }
+	  	    { href : 'http://subdomain1.' + window.location.pathname, title : 'subdomain1' },
+	  	    { href : 'http://subdomain2.' + window.location.pathname, title : 'subdomain2' }
 	    ]
 	  };
 	  $.setup_links(options).test_loader();
 	  
 	  setTimeout(function(){
-  	  $.each(options.links, function(index, element) {
-  	    ok(
-  	      $('#iframe' + index).is(':visible'),
-  	      "Cross domain tests should be visible"
-  	    );
-  	  });
-  	  start();  
-  	  $.teardown();
+	  	  $.each(options.links, function(index, element) {
+	  	    ok(
+	  	      $('#iframe' + index).is(':visible'),
+	  	      "Cross domain tests should be visible"
+	  	    );
+	  	  });
+	  	  start();  
+	  	  $.teardown();
 	  }, 500);
 	  
+	});
+	
+	asyncTest("Should wait for a response from from the iFrame before reporting results", function() {
+	  var options = {
+	    links : [
+  	    { href : 'http://' + window.location.hostname + '/tests/mock_tests/slow_passing_test.html', title : 'slow passing test' },
+  	    { href : 'http://' + window.location.hostname + '/tests/mock_tests/slow_failing_test.html', title : 'slow failing test' }
+	    ]
+	  };
+	  $.setup_links(options).test_loader();
+	  
+	  setTimeout(function(){
+				var expected = ['pass', 'fail'];
+				var result = $('iframe').map(function() {
+					if ($(this).contents().find('#qunit-banner').hasClass('qunit-pass')) {
+						return 'pass';
+					}
+					return 'fail';
+				}).get();
+
+				var result = $("#results").text();
+				expected = "passfail";
+				equal(
+					result,
+					expected,
+					"Should display results"
+				);
+
+				start();
+			  $.teardown();
+			}, 1000);
+		
 	});
 });
